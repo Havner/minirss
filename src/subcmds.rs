@@ -2,69 +2,6 @@ use crate::{tools, rss, stubs, GenericResult};
 use clap::Args;
 use std::{net::TcpStream, io::Write};
 
-#[derive(Args, Debug)]
-pub(crate) struct KeyArgs
-{
-    /// filename with msg
-    #[arg(short, long)]
-    input: String,
-
-    /// filename with key, none for stub
-    #[arg(short, long)]
-    key: Option<String>,
-
-    /// filename to write to, none for stdout
-    #[arg(short, long)]
-    output: Option<String>,
-}
-
-pub(crate) fn key(args: &KeyArgs) -> GenericResult
-{
-    let input = tools::file_read(&args.input, true)?;
-    let key = match args.key.as_ref() {
-        Some(file) => tools::file_read(&file, false)?,
-        None => stubs::DELEGATED_KEY.to_vec(),
-    };
-    let output = rss::do_key(&input, &key)?;
-
-    if let Some(file) = args.output.as_ref() {
-        tools::file_write(file, &output)?;
-    }
-
-    Ok(())
-}
-
-#[derive(Args, Debug)]
-pub(crate) struct TokenArgs
-{
-    /// filename with msg
-    #[arg(short, long)]
-    input: String,
-
-    /// filename with token, none for stub
-    #[arg(short, long)]
-    token: Option<String>,
-
-    /// filename to write to, none for stdout
-    #[arg(short, long)]
-    output: Option<String>,
-}
-
-pub(crate) fn token(args: &TokenArgs) -> GenericResult
-{
-    let input = tools::file_read(&args.input, true)?;
-    let token = match args.token.as_ref() {
-        Some(file) => tools::file_read(&file, false)?,
-        None => stubs::PLATFORM_TOKEN.to_vec(),
-    };
-    let output = rss::do_token(&input, &token)?;
-
-    if let Some(file) = args.output.as_ref() {
-        tools::file_write(file, &output)?;
-    }
-
-    Ok(())
-}
 
 #[derive(Args, Debug)]
 pub(crate) struct TcpArgs
@@ -84,7 +21,7 @@ pub(crate) fn tcp(args: &TcpArgs) -> GenericResult
 
     print!("KEY: ");
     let key = match args.key.as_ref() {
-        Some(file) => tools::file_read(&file, false)?,
+        Some(file) => tools::file_read(&file)?,
         None => {
             println!("taking stubbed");
             stubs::DELEGATED_KEY.to_vec()
@@ -93,7 +30,7 @@ pub(crate) fn tcp(args: &TcpArgs) -> GenericResult
 
     print!("TOKEN: ");
     let token = match args.token.as_ref() {
-        Some(file) => tools::file_read(&file, false)?,
+        Some(file) => tools::file_read(&file)?,
         None => {
             println!("taking stubbed");
             stubs::PLATFORM_TOKEN.to_vec()

@@ -3,19 +3,16 @@ use std::{
     io::{Read, Write}, net::TcpStream, time::Duration,
 };
 
-pub(crate) fn file_read(filename: &str, tcp: bool) -> std::io::Result<Vec<u8>>
+pub(crate) fn file_read(filename: &str) -> std::io::Result<Vec<u8>>
 {
     let mut buf = Vec::<u8>::with_capacity(64);
     File::open(filename)?.read_to_end(&mut buf)?;
-    if tcp {
-        // remove \r\n from socat
-        buf.resize(buf.len() - 2, 0);
-    }
     buf.shrink_to_fit();
     println!("read file, len: {}", buf.len());
     Ok(buf)
 }
 
+#[allow(dead_code)]
 pub(crate) fn file_write(filename: &str, data: &[u8]) -> std::io::Result<()>
 {
     File::create(filename)?.write_all(data)
@@ -52,6 +49,5 @@ pub(crate) fn read_stream(stream: &mut TcpStream) -> std::io::Result<Option<Vec<
 
     stream.set_read_timeout(None)?;
 
-    /* -2 for the \r\n */
-    Ok(Some(data[..count-2].to_vec()))
+    Ok(Some(data[..count].to_vec()))
 }
