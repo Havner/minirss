@@ -1,9 +1,9 @@
 mod rss;
 mod stubs;
-mod subcmds;
+mod tcp;
 mod tools;
 
-use clap::{Parser, Subcommand};
+use clap::Parser;
 
 type GenericResult = Result<(), Box<dyn std::error::Error>>;
 
@@ -11,24 +11,20 @@ type GenericResult = Result<(), Box<dyn std::error::Error>>;
 #[command(author, version, about)]
 struct Cli
 {
-    #[command(subcommand)]
-    command: Commands,
-}
+    /// filename with key, none for stub
+    #[arg(short, long)]
+    key: Option<String>,
 
-#[derive(Subcommand, Debug)]
-enum Commands
-{
-    /// automatic TCP mode
-    Tcp(subcmds::TcpArgs),
+    /// filename with token, none for stub
+    #[arg(short, long)]
+    token: Option<String>,
 }
 
 fn main() -> GenericResult
 {
     let cli = Cli::parse();
 
-    match &cli.command {
-        Commands::Tcp(args) => subcmds::tcp(args)?,
-    };
+    tcp::tcp(&cli)?;
 
     Ok(())
 }

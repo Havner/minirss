@@ -1,21 +1,7 @@
 use crate::{tools, rss, stubs, GenericResult};
-use clap::Args;
 use std::{net::TcpStream, io::Write};
 
-
-#[derive(Args, Debug)]
-pub(crate) struct TcpArgs
-{
-    /// filename with key, none for stub
-    #[arg(short, long)]
-    key: Option<String>,
-
-    /// filename with token, none for stub
-    #[arg(short, long)]
-    token: Option<String>,
-}
-
-pub(crate) fn tcp(args: &TcpArgs) -> GenericResult
+pub(crate) fn tcp(args: &super::Cli) -> GenericResult
 {
     println!("   === Preparing data ===\n");
 
