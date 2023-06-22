@@ -2,6 +2,8 @@
 
 type psa_handle_t = i32;
 
+pub(super) const RSS_PLATFORM_SERVICE_HANDLE: psa_handle_t = 0x40000105;
+pub(super) const RSS_MEASURED_BOOT_HANDLE: psa_handle_t = 0x40000110;
 pub(super) const RSS_DELEGATED_SERVICE_HANDLE: psa_handle_t = 0x40000111;
 
 pub(super) const RSS_DELEGATED_ATTEST_GET_DELEGATED_KEY: i16 = 1001;
