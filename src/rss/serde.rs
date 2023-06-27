@@ -6,6 +6,9 @@ pub(super) const RSS_PLATFORM_SERVICE_HANDLE: psa_handle_t = 0x40000105;
 pub(super) const RSS_MEASURED_BOOT_HANDLE: psa_handle_t = 0x40000110;
 pub(super) const RSS_DELEGATED_SERVICE_HANDLE: psa_handle_t = 0x40000111;
 
+pub(super) const RSS_MEASURED_BOOT_READ: i16 = 1001;
+pub(super) const RSS_MEASURED_BOOT_EXTEND: i16 = 1002;
+
 pub(super) const RSS_DELEGATED_ATTEST_GET_DELEGATED_KEY: i16 = 1001;
 pub(super) const RSS_DELEGATED_ATTEST_GET_PLATFORM_TOKEN: i16 = 1002;
 
@@ -75,6 +78,8 @@ impl Request
 {
     pub(super) fn de(input: &[u8]) -> Result<Self, super::Error>
     {
+        println!("   deserializing");
+
         if input.len() > std::mem::size_of::<rss_embed_msg_t>() {
             return Err(super::Error::WrongDataLength);
         }
@@ -87,6 +92,8 @@ impl Request
         let psa_type: i16 = ((msg.msg.ctrl_param & TYPE_MASK) >> TYPE_OFFSET).try_into().unwrap();
         let num_in_vecs: usize = ((msg.msg.ctrl_param & IN_LEN_MASK) >> IN_LEN_OFFSET).try_into().unwrap();
         let num_out_vecs: usize = ((msg.msg.ctrl_param & OUT_LEN_MASK) >> OUT_LEN_OFFSET).try_into().unwrap();
+
+        println!("   in_vecs: {}, out_vecs: {}", num_in_vecs, num_out_vecs);
 
         /* required to copy on stack, msg is packed */
         let io_sizes = msg.msg.io_size;
@@ -133,6 +140,8 @@ impl Response
 {
     pub(super) fn ser(&self) -> Result<Vec<u8>, super::Error>
     {
+        println!("   serializing");
+
         /* pack data */
 
         let header = serialized_rss_comms_header_t {
@@ -151,10 +160,12 @@ impl Response
                 break;
             }
             out_size[counter] = len.try_into().unwrap();
-            trailer[offset..len].clone_from_slice(&out_vec);
+            trailer[offset..offset+len].clone_from_slice(&out_vec);
             offset = offset + len;
             counter = counter + 1;
         }
+
+        println!("   out_vecs: {}", counter);
 
         let reply = rss_embed_reply_t {
             return_val: self.return_val,

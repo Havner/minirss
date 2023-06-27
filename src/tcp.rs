@@ -1,5 +1,5 @@
 use crate::{tools, rss, stubs, GenericResult};
-use std::{net::TcpStream, io::Write};
+use std::{net::TcpStream, io::Write, time::Duration};
 
 pub(crate) fn tcp(args: &super::Cli) -> GenericResult
 {
@@ -42,5 +42,9 @@ pub(crate) fn tcp(args: &super::Cli) -> GenericResult
 
         println!("TCP sending response, len: {}\n", res.len());
         stream.write_all(&res)?;
+
+        // just to stabilize the channel, no flow control, the serial on FVP
+        // can be unrealiable and to give time to handle the response
+        std::thread::sleep(Duration::from_millis(100));
     }
 }
