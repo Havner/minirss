@@ -1,5 +1,18 @@
 use super::{Error, serde};
 
+const SW_TYPE_MAX_SIZE: usize = 20;
+
+#[derive(Debug)]
+#[repr(C)]
+struct measured_boot_extend_iovec_t {
+	index: u8,
+	lock_measurement: u8,
+	measurement_algo: u32,
+	sw_type: [u8; SW_TYPE_MAX_SIZE],
+	sw_type_size: u8,
+}
+
+
 pub(super) fn perform(req: serde::Request) -> Result<serde::Response, Error>
 {
     match req.psa_type {
@@ -19,6 +32,11 @@ pub(super) fn perform(req: serde::Request) -> Result<serde::Response, Error>
         println!("   got IN{}: {}", count, hex::encode(v));
         count = count + 1;
     }
+
+    let ptr = req.in_vecs[0].as_ptr() as *const measured_boot_extend_iovec_t;
+    let extend: &measured_boot_extend_iovec_t = unsafe { &*ptr };
+
+    println!("{:X?}", extend);
 
     /* assume no output exists... */
     if req.out_lens[0] != 0 {
