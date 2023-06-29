@@ -36,7 +36,7 @@ pub(super) fn perform(req: serde::Request) -> Result<serde::Response, Error>
     let ptr = req.in_vecs[0].as_ptr() as *const measured_boot_extend_iovec_t;
     let extend: &measured_boot_extend_iovec_t = unsafe { &*ptr };
 
-    println!("{:X?}", extend);
+    println!("   {:X?}", extend);
 
     /* assume no output exists... */
     if req.out_lens[0] != 0 {

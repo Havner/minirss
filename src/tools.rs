@@ -29,18 +29,16 @@ pub(crate) fn read_stream(stream: &mut TcpStream) -> std::io::Result<Option<Vec<
     }
 
     /* ugly, but should work */
-    stream.set_read_timeout(Some(Duration::from_millis(10)))?;
+    stream.set_read_timeout(Some(Duration::from_millis(50)))?;
     loop {
-        let mut buf = [0u8, 1];
-        let result = stream.peek(&mut buf);
+        let result = stream.read(&mut data[count..]);
         if let Err(e) = &result {
             if e.kind() == std::io::ErrorKind::WouldBlock {
                 break;
             }
         }
-        let mut left = result.unwrap();
+        let left = result.unwrap();
         if left > 0 {
-            left = stream.read(&mut data[count..])?;
             count = count + left;
         } else {
             break;
