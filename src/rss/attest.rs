@@ -17,9 +17,6 @@ pub(super) fn perform(req: serde::Request, key: &[u8], token: &[u8]) -> Result<s
     /* we should probably be checking whats inside in_vecs */
     let mut count = 0;
     for v in &req.in_vecs {
-        if v.len() == 0 {
-            break;
-        }
         println!("   got IN{}: {}", count, hex::encode(v));
         count = count + 1;
     }
