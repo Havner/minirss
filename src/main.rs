@@ -18,6 +18,11 @@ struct Cli
     /// filename with token, none for stub
     #[arg(short, long)]
     token: Option<String>,
+
+    /// address to connect to
+    #[arg(short, long)]
+    #[arg(default_value = "127.0.0.1:5002")]
+    addr: String,
 }
 
 fn main() -> GenericResult

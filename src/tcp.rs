@@ -25,7 +25,7 @@ pub(crate) fn tcp(args: &super::Cli) -> GenericResult
     println!("");
 
     println!("   === Connecting to FVP ===\n");
-    let mut stream = TcpStream::connect("localhost:5002")?;
+    let mut stream = TcpStream::connect(&args.addr)?;
 
     println!("   === Running loop ===\n");
     loop {
